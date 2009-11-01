@@ -1,10 +1,13 @@
 ;; This was inspired by an example in "Programming Clojure" by Stuart Halloway
 ;; Copyright (c) 2009 Joe Yates, released under the MIT license
-(ns sloccount)
+(ns sloccount
+  (:gen-class
+   :state app-state
+   :init init)
+  (:use [clojure.contrib.duck-streams :only (reader)])
+  (:import (java.io.File)))
 
-(use '[clojure.contrib.duck-streams :only (reader)])
-
-; Helpers
+;; Utilities
 (defn merge-sums [totals results]
   (merge-with + totals results))
 
@@ -72,7 +75,7 @@
 
 ;; Line counting
 
-; Perl Mason state machine
+;; Perl Mason state machine
 (defn mason-html-state [line state]
   (cond
     (re-find #"<%(perl|shared|once)>" line) (and (reset! state :perl) :perl)
@@ -87,32 +90,9 @@
     (mason-html-state line state)
     (mason-perl-state line state)))
 
-; line-types Returns a seq of keywords indicating line types
+;; line-types Returns a seq of keywords indicating line types
 (defmulti line-types file-type :default :text)
-(defmethod line-types :mason [file]
-  (let [state (atom :html)]
-    (with-open [rdr (reader file)]
-      (map (fn [line] (mason-line-type line state)) (doall (line-seq rdr))))))
-(defmethod line-types :perl [file]
-  (with-open [rdr (reader file)]
-    (map
-     (fn [line]
-       (cond
-         (blank? line)            :blank
-         (.startsWith line "#!/") :shebang
-         (.startsWith line "#")   :comment
-         true                     :perl))
-     (doall (line-seq rdr)))))
-(defmethod line-types :ruby [file]
-  (with-open [rdr (reader file)]
-    (map
-     (fn [line]
-       (cond
-         (blank? line)            :blank
-         (.startsWith line "#!/") :shebang
-         (.startsWith line "#")   :comment
-         true                     :ruby))
-     (doall (line-seq rdr)))))
+
 (defmethod line-types :clojure [file]
   (with-open [rdr (reader file)]
     (map
@@ -123,14 +103,34 @@
          (.startsWith line ";")   :comment
          true                     :clojure))
      (doall (line-seq rdr)))))
-(defmethod line-types :xml [file]
+
+(defmethod line-types :mason [file]
+  (let [state (atom :html)]
+    (with-open [rdr (reader file)]
+      (map (fn [line] (mason-line-type line state)) (doall (line-seq rdr))))))
+
+(defmethod line-types :perl [file]
   (with-open [rdr (reader file)]
     (map
      (fn [line]
        (cond
-         (blank? line) :blank
-         true          :xml))
+         (blank? line)            :blank
+         (.startsWith line "#!/") :shebang
+         (.startsWith line "#")   :comment
+         true                     :perl))
      (doall (line-seq rdr)))))
+
+(defmethod line-types :ruby [file]
+  (with-open [rdr (reader file)]
+    (map
+     (fn [line]
+       (cond
+         (blank? line)            :blank
+         (.startsWith line "#!/") :shebang
+         (.startsWith line "#")   :comment
+         true                     :ruby))
+     (doall (line-seq rdr)))))
+
 (defmethod line-types :text [file]
   (let [file-type (file-type file)]
     (with-open [rdr (reader file)]
@@ -141,6 +141,15 @@
            true          file-type))
        (doall (line-seq rdr))))))
 
+(defmethod line-types :xml [file]
+  (with-open [rdr (reader file)]
+    (map
+     (fn [line]
+       (cond
+         (blank? line) :blank
+         true          :xml))
+     (doall (line-seq rdr)))))
+
 (defn count-lines [file]
   (reduce #(merge-sums %1 {%2 1}) {} (line-types file)))
 
@@ -149,3 +158,9 @@
    merge-sums
    (for [file (source-files path)] 
      (count-lines file))))
+
+(defn -main [& args]
+  (println "Call (loc path)"))
+
+(defn -init []
+  [[] (atom [])])
