@@ -1,2 +1,2 @@
 classes/*.class
-classes/clojure/*
+classes/**/*
