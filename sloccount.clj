@@ -1,5 +1,6 @@
 ;; This was inspired by an example in "Programming Clojure" by Stuart Halloway
 ;; Copyright (c) 2009 Joe Yates, released under the MIT license
+
 (ns sloccount
   (:gen-class
    :state app-state
@@ -17,20 +18,33 @@
 ;; File selection
 (defn version-control? [file] 
   (re-find #"\W(\.git|\.svn)\W" (.toString file)))
+(defn settings? [file] 
+  (re-find #"/(\.htaccess|\.gitignore)$" (.toString file)))
 (defn binary? [file] 
-  (re-find #"\.(doc|dot|exe|gif|jpe?g|ods|odt|png|xls)$" (.toString file)))
+  (re-find #"\.(doc|dot|exe|gif|jpe?g|ods|odt|ott|png|ttf|xls)$" (.toString file)))
+(defn source-file? [file]
+  (cond
+    (version-control? file) false
+    (settings? file)        false
+    (binary? file)          false
+    true                    true))
 
 (defn files [path]
-  (filter #(.isFile %) (file-seq (java.io.File. (.toString path)))))
+  (filter 
+   #(.isFile %)
+   (file-seq (java.io.File. (.toString path)))))
 
 (defn source-files [path]
-  (filter #(not (or (version-control? %) (binary? %))) (files path)))
+  (filter
+   source-file?
+   (files path)))
 
 ;; File type inference
 (defn clojure-file-name? [filename] (.endsWith filename ".clj"))
 (defn css-file-name? [filename] (.endsWith filename ".css"))
+(defn html-file-name? [filename] (re-find #"\.html?$" filename))
 (defn javascript-file-name? [filename] (.endsWith filename ".js"))
-(defn mason-file-name? [filename] (re-find #"\.(mcp|html)$" filename))
+(defn mason-file-name? [filename] (or (re-find #"\.(mhtml|mcp)$" filename) (.endsWith filename "/autohandler") (.endsWith filename  "/dhandler")))
 (defn perl-file-name? [filename] (re-find #"\.p[lm]$" filename))
 (defn ruby-file-name? [filename] (or (.endsWith filename ".rb") (.endsWith filename "Rakefile")))
 (defn sql-file-name? [filename] (.endsWith filename ".sql"))
@@ -62,6 +76,7 @@
     (or
      (and (clojure-file-name? filename)    :clojure)
      (and (css-file-name? filename)        :css)
+     (and (html-file-name? filename)       :html)
      (and (javascript-file-name? filename) :javascript)
      (and (mason-file-name? filename)      :mason)
      (and (perl-file-name? filename)       :perl)
@@ -107,7 +122,9 @@
 (defmethod line-types :mason [file]
   (let [state (atom :html)]
     (with-open [rdr (reader file)]
-      (map (fn [line] (mason-line-type line state)) (doall (line-seq rdr))))))
+      (map 
+       (fn [line] (mason-line-type line state))
+       (doall (line-seq rdr))))))
 
 (defmethod line-types :perl [file]
   (with-open [rdr (reader file)]
@@ -151,7 +168,9 @@
      (doall (line-seq rdr)))))
 
 (defn count-lines [file]
-  (reduce #(merge-sums %1 {%2 1}) {} (line-types file)))
+  (reduce
+   #(merge-sums %1 {%2 1})
+   {} (line-types file)))
 
 (defn loc [path]
   (reduce
@@ -159,8 +178,22 @@
    (for [file (source-files path)] 
      (count-lines file))))
 
+(defn files-of-type [path type]
+  (filter
+   #(= (file-type %) type)
+   (source-files path)))
+
+(defn list-files-of-type [path type]
+  (println
+   (map
+    #(str % "\n")
+    (files-of-type path type))))
+
 (defn -main [& args]
-  (println "Call (loc path)"))
+  (cond
+    (= 1 (count args))                                          (println (loc (first args)))
+    (and (= 3 (count args)) (= "--files-of-type" (nth args 1))) (list-files-of-type (nth args 0) (keyword (nth args 2)))
+    true                                                        (println "Usage: ...")))
 
 (defn -init []
   [[] (atom [])])

@@ -1,12 +1,3 @@
-Emacs
------
-Start SLIME: M-x slime
-Load: C-x C-f sloccount.clj
-Compile: C-c C-j
-user> (in-ns 'sloccount)
-sloccount> (loc "/path/to/project")
-{:html 7758, :text 541, :xml 15830, :comment 280 ...}
-
 Setup
 -----
 The following uses my clj script: http://github.com/joeyates/bash-clj/raw/master/clj
@@ -19,11 +10,21 @@ user=> [Ctrl+d]
 
 Use
 ---
-$ clj --cp classes --run sloccount
+$ clj --cp classes --run sloccount /path/to/project
+{:html 7758, :text 541, :xml 15830, :comment 280 ...}
+$ clj --cp classes --run sloccount /path/to/project --files-of-type [perl|text|...|unknown]
+
+Emacs
+-----
+Start SLIME: M-x slime
+Load: C-x C-f sloccount.clj
+Compile: C-c C-j
+user> (in-ns 'sloccount)
+sloccount> (loc "/path/to/project")
+{:html 7758, :text 541, :xml 15830, :comment 280 ...}
 
 To do
 -----
-- Actually accept the path to analyze as a command-line parameter :-)
 - Load settings from file
 - Allow user configuration: command line and rc file
 -- Ignore paths
