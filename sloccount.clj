@@ -44,7 +44,12 @@
 (defn css-file-name? [filename] (.endsWith filename ".css"))
 (defn html-file-name? [filename] (re-find #"\.html?$" filename))
 (defn javascript-file-name? [filename] (.endsWith filename ".js"))
-(defn mason-file-name? [filename] (or (re-find #"\.(mhtml|mcp)$" filename) (.endsWith filename "/autohandler") (.endsWith filename  "/dhandler")))
+(defn mason-html-file-name? [filename]
+  (or
+   (re-find #"\.(mhtml|mcp)$" filename)
+   (.endsWith filename "/autohandler")
+   (.endsWith filename  "/dhandler")))
+(defn mason-javascript-file-name? [filename] (re-find #"\.(mjs)$" filename))
 (defn perl-file-name? [filename] (re-find #"\.p[lm]$" filename))
 (defn ruby-file-name? [filename] (or (.endsWith filename ".rb") (.endsWith filename "Rakefile")))
 (defn sql-file-name? [filename] (.endsWith filename ".sql"))
@@ -78,7 +83,8 @@
      (and (css-file-name? filename)        :css)
      (and (html-file-name? filename)       :html)
      (and (javascript-file-name? filename) :javascript)
-     (and (mason-file-name? filename)      :mason)
+     (and (mason-html-file-name? filename) :mason-html)
+     (and (mason-javascript-file-name? filename) :mason-javascript)
      (and (perl-file-name? filename)       :perl)
      (and (ruby-file-name? filename)       :ruby)
      (and (sql-file-name? filename)        :sql)
@@ -90,20 +96,29 @@
 
 ;; Line counting
 
-;; Perl Mason state machine
+;; Mason state machine
 (defn mason-html-state [line state]
   (cond
     (re-find #"<%(perl|shared|once)>" line) (and (reset! state :perl) :perl)
     (.startsWith line "%")                                            :perl
     true                                                              :html))
-(defn mason-perl-state [line state]
+(defn mason-javascript-state [line state]
   (cond
-    (re-find #"</%(perl|shared|once)>" line) (and (reset! state :html) :html)
-    true                                                               :perl))
-(defn mason-line-type [line state]
+    (re-find #"<%(perl|shared|once)>" line) (and (reset! state :perl) :perl)
+    (.startsWith line "%")                                            :perl
+    true                                                              :javascript))
+(defn mason-perl-state [line state previous-state]
+  (cond
+    (re-find #"</%(perl|shared|once)>" line) (and (reset! state previous-state) previous-state)
+    true                                                                        :perl))
+(defn mason-html-line-type [line state]
   (if (= @state :html)
     (mason-html-state line state)
-    (mason-perl-state line state)))
+    (mason-perl-state line state :html)))
+(defn mason-javascript-line-type [line state]
+  (if (= @state :javascript)
+    (mason-javascript-state line state)
+    (mason-perl-state line state :javascript)))
 
 ;; line-types Returns a seq of keywords indicating line types
 (defmulti line-types file-type :default :text)
@@ -119,11 +134,18 @@
          true                     :clojure))
      (doall (line-seq rdr)))))
 
-(defmethod line-types :mason [file]
+(defmethod line-types :mason-html [file]
   (let [state (atom :html)]
     (with-open [rdr (reader file)]
       (map 
-       (fn [line] (mason-line-type line state))
+       (fn [line] (mason-html-line-type line state))
+       (doall (line-seq rdr))))))
+
+(defmethod line-types :mason-javascript [file]
+  (let [state (atom :javascript)]
+    (with-open [rdr (reader file)]
+      (map 
+       (fn [line] (mason-javascript-line-type line state))
        (doall (line-seq rdr))))))
 
 (defmethod line-types :perl [file]
