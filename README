@@ -1,4 +1,20 @@
-To do:
+Setup
+-----
+The following uses my clj script: http://github.com/joeyates/bash-clj/raw/master/clj
+
+$ git clone git://github.com/joeyates/sloccount-clojure.git
+$ clj --cp classes
+user=> (compile 'sloccount)     
+sloccount
+user=> [Ctrl+d]
+
+Use
+---
+$ clj --cp classes --run sloccount
+
+To do
+-----
+- Actually accept the path to analyze as a command-line parameter :-)
 - Load settings from file
 - Allow user configuration: command line and rc file
 -- Ignore paths
@@ -6,3 +22,5 @@ To do:
 - Use state machine to count:
 -- ruby: block comments and erb
 -- perl: block comments
+
+Copyright (c) 2009 Joe Yates, released under the MIT license
