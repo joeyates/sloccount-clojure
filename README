@@ -1,3 +1,12 @@
+Emacs
+-----
+Start SLIME: M-x slime
+Load: C-x C-f sloccount.clj
+Compile: C-c C-j
+user> (in-ns 'sloccount)
+sloccount> (loc "/path/to/project")
+{:html 7758, :text 541, :xml 15830, :comment 280 ...}
+
 Setup
 -----
 The following uses my clj script: http://github.com/joeyates/bash-clj/raw/master/clj
