@@ -9,7 +9,7 @@
   (merge-with + totals results))
 
 (defn blank? [line]
-  (re-find #"^\S*$" line))
+  (re-find #"^\s*$" line))
 
 ;; File selection
 (defn version-control? [file] 
