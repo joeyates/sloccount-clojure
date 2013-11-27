@@ -27,6 +27,7 @@ From the repl:
 - Use state machine to count:
     - ruby: block comments and erb
     - perl: block comments
+- Make a lein plugin out of this?
 
 
 ## License
