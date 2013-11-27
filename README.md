@@ -22,11 +22,11 @@ From the repl:
 ## TO DO
 - Load settings from file
 - Allow user configuration: command line and rc file
--- Ignore paths
--- User-defined file types
+    - Ignore paths
+	- User-defined file types
 - Use state machine to count:
--- ruby: block comments and erb
--- perl: block comments
+    - ruby: block comments and erb
+    - perl: block comments
 
 
 ## License
