@@ -1,7 +1,7 @@
 ;; Copyright (c) 2009 Joe Yates, released under the MIT license
 
 (ns sloccount.line_types
-  (:use [clojure.contrib.duck-streams :only (reader)])
+  (:use [clojure.java.io :only (reader)])
   (:import (java.io.File)))
 
 ;; Utilities
