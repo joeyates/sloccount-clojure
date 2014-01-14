@@ -30,6 +30,7 @@
 
 ;; File type inference
 (defn clojure-file-name? [filename] (.endsWith filename ".clj"))
+(defn clojurescript-file-name? [filename] (.endsWith filename ".cljs"))
 (defn css-file-name? [filename] (.endsWith filename ".css"))
 (defn html-file-name? [filename] (re-find #"\.html?$" filename))
 (defn javascript-file-name? [filename] (.endsWith filename ".js"))
@@ -68,19 +69,20 @@
 (defn file-type [file]
   (let [filename (.toString file)]
     (or
-     (and (clojure-file-name? filename)    :clojure)
-     (and (css-file-name? filename)        :css)
-     (and (html-file-name? filename)       :html)
-     (and (javascript-file-name? filename) :javascript)
-     (and (mason-html-file-name? filename) :mason-html)
+     (and (clojure-file-name? filename)          :clojure)
+     (and (clojurescript-file-name? filename)    :clojurescipt)
+     (and (css-file-name? filename)              :css)
+     (and (html-file-name? filename)             :html)
+     (and (javascript-file-name? filename)       :javascript)
+     (and (mason-html-file-name? filename)       :mason-html)
      (and (mason-javascript-file-name? filename) :mason-javascript)
-     (and (perl-file-name? filename)       :perl)
-     (and (ruby-file-name? filename)       :ruby)
-     (and (sql-file-name? filename)        :sql)
-     (and (text-file-name? filename)       :text)
-     (and (xml-file-name? filename)        :xml)
-     (and (yaml-file-name? filename)       :yaml)
-     (and (file-empty? file)               :empty)
+     (and (perl-file-name? filename)             :perl)
+     (and (ruby-file-name? filename)             :ruby)
+     (and (sql-file-name? filename)              :sql)
+     (and (text-file-name? filename)             :text)
+     (and (xml-file-name? filename)              :xml)
+     (and (yaml-file-name? filename)             :yaml)
+     (and (file-empty? file)                     :empty)
      (file-type-from-contents file))))
 
 (defn files-of-type [path type]
