@@ -14,14 +14,14 @@
 
 (defn count-lines [file]
   (reduce
-   #(merge-sums %1 {%2 1})
-   {} (sloccount.line_types/line-types file)))
+    #(merge-sums %1 {%2 1})
+    {} (sloccount.line_types/line-types file)))
 
 (defn loc [path]
   (reduce
-   merge-sums
-   (for [file (sloccount.files/source-files path)] 
-     (count-lines file))))
+    merge-sums
+    (for [file (sloccount.files/source-files path)]
+      (count-lines file))))
 
 (defn list-file-types [path]
   (doseq [p (sloccount.files/file-types path)]
@@ -30,8 +30,8 @@
 (defn list-files-of-type [path type]
   (println
    (map
-    #(str % "\n")
-    (sloccount.files/files-of-type path type))))
+     #(str % "\n")
+     (sloccount.files/files-of-type path type))))
 
 (defn usage []
   (println "Usage:
