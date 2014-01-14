@@ -41,7 +41,13 @@
    (.endsWith filename  "/dhandler")))
 (defn mason-javascript-file-name? [filename] (re-find #"\.(mjs)$" filename))
 (defn perl-file-name? [filename] (re-find #"\.p[lm]$" filename))
-(defn ruby-file-name? [filename] (or (.endsWith filename ".rb") (.endsWith filename "Rakefile")))
+(defn ruby-file-name? [filename]
+  (or
+    (.endsWith filename ".rb")
+    (.endsWith filename ".gemspec")
+    (.endsWith filename "/Gemfile")
+    (.endsWith filename "/Gemfile.lock")
+    (.endsWith filename "/Rakefile")))
 (defn sql-file-name? [filename] (.endsWith filename ".sql"))
 (defn text-file-name? [filename] (or (.endsWith filename ".txt") (re-find #"\WREADME" filename)))
 (defn xml-file-name? [filename] (re-find #"\.(xmi|xml|xsl)$" filename))
