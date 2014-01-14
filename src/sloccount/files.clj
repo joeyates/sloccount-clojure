@@ -70,7 +70,7 @@
   (let [filename (.toString file)]
     (or
      (and (clojure-file-name? filename)          :clojure)
-     (and (clojurescript-file-name? filename)    :clojurescipt)
+     (and (clojurescript-file-name? filename)    :clojurescript)
      (and (css-file-name? filename)              :css)
      (and (html-file-name? filename)             :html)
      (and (javascript-file-name? filename)       :javascript)
