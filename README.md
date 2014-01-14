@@ -8,7 +8,7 @@ From the shell:
 
 ```shell
 cd sloccount-clojure
-lein run  /path/to/project
+lein run /path/to/project
 # => {:html 7758, :text 541, :xml 15830, :comment 280 ...}
 ```
 
@@ -28,7 +28,6 @@ From the repl:
     - ruby: block comments and erb
     - perl: block comments
 - Make a lein plugin out of this?
-
 
 ## License
 
