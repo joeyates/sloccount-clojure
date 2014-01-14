@@ -18,13 +18,13 @@
 
 (defn files [path]
   (filter 
-   #(.isFile %)
-   (file-seq (java.io.File. (.toString path)))))
+    #(.isFile %)
+    (file-seq (java.io.File. (.toString path)))))
 
 (defn source-files [path]
   (filter
-   source-file?
-   (files path)))
+    source-file?
+    (files path)))
 
 ;; File type inference
 (defn clojure-file-name? [filename] (.endsWith filename ".clj"))
@@ -103,5 +103,5 @@
 
 (defn files-of-type [path type]
   (filter
-   #(= (sloccount.files/file-type %) type)
-   (source-files path)))
+    #(= (sloccount.files/file-type %) type)
+    (source-files path)))
