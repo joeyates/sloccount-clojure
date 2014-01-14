@@ -33,6 +33,10 @@
     #(str % "\n")
     (sloccount.files/files-of-type path type))))
 
+(defn usage []
+  (println "Usage:
+lein run PATH [--file-types|--files-of-type TYPE]"))
+
 (defn -main [& args]
   (cond
     (= 1 (count args))
@@ -46,7 +50,7 @@
       (= "--file-types" (nth args 1)))
       (list-file-types (first args))
     true
-       (println "Usage: ...")))
+       (usage)))
 
 (defn -init []
   [[] (atom [])])
