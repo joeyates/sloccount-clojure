@@ -37,16 +37,20 @@
 ;; line-types Returns a seq of keywords indicating line types
 (defmulti line-types sloccount.files/file-type :default :text)
 
-(defmethod line-types :clojure [file]
+(defn clojure-file-parse [file clojure-dialect]
   (with-open [rdr (reader file)]
-    (map
-     (fn [line]
-       (cond
-         (blank? line)            :blank
-         (.startsWith line "#!/") :shebang
-         (.startsWith line ";")   :comment
-         true                     :clojure))
-     (doall (line-seq rdr)))))
+    (map (fn [line]
+           (cond (blank? line)            :blank
+                 (.startsWith line "#!/") :shebang
+                 (.startsWith line ";")   :comment
+                 :else                    clojure-dialect))
+         (-> rdr line-seq doall))))
+
+(defmethod line-types :clojure [file]
+  (clojure-file-parse file :clojure))
+
+(defmethod line-types :clojurescript [file]
+  (clojure-file-parse file :clojurescript))
 
 (defmethod line-types :mason-html [file]
   (let [state (atom :html)]
