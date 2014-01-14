@@ -49,9 +49,16 @@
     (.endsWith filename "/Gemfile.lock")
     (.endsWith filename "/Rakefile")))
 (defn sql-file-name? [filename] (.endsWith filename ".sql"))
-(defn text-file-name? [filename] (or (.endsWith filename ".txt") (re-find #"\WREADME" filename)))
+(defn text-file-name? [filename]
+  (or
+    (.endsWith filename ".txt")
+    (.endsWith filename "/COPYING")
+    (re-find #"\WREADME" filename)))
 (defn xml-file-name? [filename] (re-find #"\.(xmi|xml|xsl)$" filename))
-(defn yaml-file-name? [filename] (re-find #"\.ya?ml$" filename))
+(defn yaml-file-name? [filename]
+  (or
+    (re-find #"\.ya?ml$" filename)
+    (.endsWith filename "/.rspec")))
 
 (defn is-shebang-of-type? [line type]
   (re-find (re-pattern (str "#![a-z/]*\\s?" type)) line))
