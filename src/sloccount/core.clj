@@ -23,6 +23,10 @@
    (for [file (sloccount.files/source-files path)] 
      (count-lines file))))
 
+(defn list-file-types [path]
+  (doseq [p (sloccount.files/file-types path)]
+    (println (str "\"" (first p) "\" " (second p)))))
+
 (defn list-files-of-type [path type]
   (println
    (map
@@ -31,9 +35,18 @@
 
 (defn -main [& args]
   (cond
-    (= 1 (count args))                                          (println (loc (first args)))
-    (and (= 3 (count args)) (= "--files-of-type" (nth args 1))) (list-files-of-type (nth args 0) (keyword (nth args 2)))
-    true                                                        (println "Usage: ...")))
+    (= 1 (count args))
+      (println (loc (first args)))
+    (and
+      (= 3 (count args))
+      (= "--files-of-type" (nth args 1)))
+      (list-files-of-type (nth args 0) (keyword (nth args 2)))
+    (and
+      (= 2 (count args))
+      (= "--file-types" (nth args 1)))
+      (list-file-types (first args))
+    true
+       (println "Usage: ...")))
 
 (defn -init []
   [[] (atom [])])

@@ -85,6 +85,11 @@
      (and (file-empty? file)                     :empty)
      (file-type-from-contents file))))
 
+(defn file-types [path]
+  (map
+    #(list (.toString %) (file-type %))
+    (source-files path)))
+
 (defn files-of-type [path type]
   (filter
    #(= (sloccount.files/file-type %) type)
