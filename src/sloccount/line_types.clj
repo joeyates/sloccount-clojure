@@ -1,5 +1,3 @@
-;; Copyright (c) 2009 Joe Yates, released under the MIT license
-
 (ns sloccount.line_types
   (:use [clojure.java.io :only (reader)])
   (:import (java.io.File)))
@@ -35,6 +33,7 @@
     (mason-perl-state line state :javascript)))
 
 ;; line-types Returns a seq of keywords indicating line types
+;; This code was inspired by an example in "Programming Clojure" by Stuart Halloway
 (defmulti line-types sloccount.files/file-type :default :text)
 
 (defn clojure-file-parse [file clojure-dialect]

@@ -1,5 +1,3 @@
-;; Copyright (c) 2009 Joe Yates, released under the MIT license
-
 (ns sloccount.files
   (:use [clojure.java.io :only (reader)])
   (:import (java.io.File)))

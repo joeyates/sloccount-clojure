@@ -1,6 +1,6 @@
 # sloccount
 
-Counts lines of code.
+Counts lines of code by programming language.
 
 ## Usage
 

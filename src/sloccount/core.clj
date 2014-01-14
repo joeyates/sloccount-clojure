@@ -1,6 +1,3 @@
-;; This code was inspired by an example in "Programming Clojure" by Stuart Halloway
-;; Copyright (c) 2009 Joe Yates, released under the MIT license
-
 (ns sloccount.core
   (:gen-class
    :state app-state
