@@ -18,7 +18,7 @@
 
 ;; File selection
 (defn version-control? [filename]
-  (re-find #"\W(\.git|\.svn)\W" filename))
+  (re-find #"(^|/)(\.git|\.svn)/" filename))
 (defn settings? [filename]
   (re-find #"/(\.htaccess|\.gitignore)$" filename))
 (defn binary? [filename]
