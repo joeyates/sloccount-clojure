@@ -1,30 +1,39 @@
 (ns sloccount.files
-  (:use [clojure.java.io :only (reader)])
-  (:import (java.io.File)))
+  (:require [clojure.java.io]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Java stuff
+
+(defn filenames [path]
+  (map
+    #(.toString %)
+    (filter
+      #(.isFile %)
+      (file-seq (clojure.java.io/file (.toString path))))))
+
+(defn file-empty? [file]
+  (= (.length (clojure.java.io/file (.toString file))) 0))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; File selection
-(defn version-control? [file] 
-  (re-find #"\W(\.git|\.svn)\W" (.toString file)))
-(defn settings? [file] 
-  (re-find #"/(\.htaccess|\.gitignore)$" (.toString file)))
-(defn binary? [file] 
-  (re-find #"\.(doc|dot|exe|gif|jpe?g|ods|odt|ott|png|ttf|xls)$" (.toString file)))
-(defn source-file? [file]
+(defn version-control? [filename]
+  (re-find #"\W(\.git|\.svn)\W" filename))
+(defn settings? [filename]
+  (re-find #"/(\.htaccess|\.gitignore)$" filename))
+(defn binary? [filename]
+  (re-find #"\.(doc|dot|exe|gif|jpe?g|ods|odt|ott|png|ttf|xls)$" filename))
+(defn source-file? [filename]
   (cond
-    (version-control? file) false
-    (settings? file)        false
-    (binary? file)          false
-    true                    true))
-
-(defn files [path]
-  (filter 
-    #(.isFile %)
-    (file-seq (java.io.File. (.toString path)))))
+    (version-control? filename) false
+    (settings? filename)        false
+    (binary? filename)          false
+    true                        true))
 
 (defn source-files [path]
   (filter
     source-file?
-    (files path)))
+    (filenames path)))
 
 ;; File type inference
 (defn clojure-file-name? [filename] (.endsWith filename ".clj"))
@@ -69,13 +78,10 @@
      false)))
 
 (defn file-type-from-contents [file]
-  (with-open [rdr (reader file)]
+  (with-open [rdr (clojure.java.io/reader file)]
     (or
      (is-shebang? rdr)
      :unknown)))
-
-(defn file-empty? [file]
-  (= (.length (java.io.File. (.toString file))) 0))
 
 (defn file-type [file]
   (let [filename (.toString file)]
