@@ -11,9 +11,6 @@
       #(.isFile %)
       (file-seq (clojure.java.io/file (.toString path))))))
 
-(defn file-empty? [file]
-  (= (.length (clojure.java.io/file (.toString file))) 0))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; File selection
@@ -82,6 +79,9 @@
     (or
      (is-shebang? rdr)
      :unknown)))
+
+(defn file-empty? [filename]
+  (= (.length (clojure.java.io/file filename)) 0))
 
 (defn file-type [file]
   (let [filename (.toString file)]
