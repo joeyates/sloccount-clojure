@@ -24,5 +24,5 @@
     (files/files-of-type "path" "foo") => ["foo_file"]
       (provided
         (files/filenames "path") => ["foo_file", "qux_file"],
-        (sloccount.files/file-type "foo_file") => "foo",
-        (sloccount.files/file-type "qux_file") => "qux")))
+        (files/file-type "foo_file") => "foo",
+        (files/file-type "qux_file") => "qux")))

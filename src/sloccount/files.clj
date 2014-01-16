@@ -112,5 +112,5 @@
 
 (defn files-of-type [path type]
   (filter
-    #(= (sloccount.files/file-type %) type)
+    #(= (file-type %) type)
     (source-files path)))
