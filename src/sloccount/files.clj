@@ -107,7 +107,7 @@
 
 (defn file-types [path]
   (map
-    #(list (.toString %) (file-type %))
+    #(list % (file-type %))
     (source-files path)))
 
 (defn files-of-type [path type]
