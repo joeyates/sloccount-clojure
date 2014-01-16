@@ -27,11 +27,6 @@
     (binary? filename)          false
     true                        true))
 
-(defn source-files [path]
-  (filter
-    source-file?
-    (filenames path)))
-
 ;; File type inference
 (defn clojure-file-name? [filename] (.endsWith filename ".clj"))
 (defn clojurescript-file-name? [filename] (.endsWith filename ".cljs"))
@@ -101,6 +96,14 @@
      (and (yaml-file-name? filename)             :yaml)
      (and (file-empty? file)                     :empty)
      (file-type-from-contents file))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Public interface
+
+(defn source-files [path]
+  (filter
+    source-file?
+    (filenames path)))
 
 (defn file-types [path]
   (map
