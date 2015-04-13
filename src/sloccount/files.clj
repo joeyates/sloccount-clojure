@@ -33,6 +33,8 @@
 (defn css-file-name? [filename] (.endsWith filename ".css"))
 (defn html-file-name? [filename] (re-find #"\.html?$" filename))
 (defn javascript-file-name? [filename] (.endsWith filename ".js"))
+(defn java-file-name? [filename] (.endsWith filename ".java"))
+
 (defn mason-html-file-name? [filename]
   (or
    (re-find #"\.(mhtml|mcp)$" filename)
@@ -94,6 +96,7 @@
      (and (text-file-name? filename)             :text)
      (and (xml-file-name? filename)              :xml)
      (and (yaml-file-name? filename)             :yaml)
+     (and (java-file-name? filename)             :java)
      (and (file-empty? file)                     :empty)
      (file-type-from-contents file))))
 
